@@ -1,0 +1,32 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>APIfiestas</name>
+    </assembly>
+    <members>
+        <member name="M:Palancia.Controllers.TiposController.Get">
+            <summary>
+            Obtenemos todos los tipos 
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Palancia.Controllers.TiposController.Agregar(APIfiestas.Models.Tipo)">
+            <summary>
+            Nos permite añadir un tipo 
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Palancia.Controllers.TiposController.Editar(APIfiestas.Models.Tipo)">
+            <summary>
+            Nos permite editar un tipo 
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Palancia.Controllers.TiposController.Eliminar(System.Int32)">
+            <summary>
+            Eliminamos el tipo que le pasamos 
+            </summary>
+            <returns></returns>
+        </member>
+    </members>
+</doc>
