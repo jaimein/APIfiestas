@@ -1,7 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using APIfiestas.Models;
+using APIfiestas.Models.request;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -23,9 +26,24 @@ namespace Palancia.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet]
-        public List<Tipo> Get()
+        public async Task<ActionResult<IEnumerable<Tipo>>> GetTipos()
         {
-            return _db.Tipo.ToList();
+            return await _db.Tipo.ToListAsync();
+        }
+
+        /// <summary>
+        /// Obtenemos un tipo por el id 
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet("id")]
+        public async Task<ActionResult<Tipo>> GetTipo(int id)
+        {
+            var tipo = await _db.Tipo.FindAsync(id);
+            if (tipo == null)
+            {
+                return NotFound();
+            }
+            return tipo;
         }
 
         /// <summary>
@@ -34,17 +52,18 @@ namespace Palancia.Controllers
         /// <returns></returns>
         [HttpPost]
         [Route("agregar")]
-        public IActionResult Agregar([FromBody] Tipo _tipo)
+        public async Task<ActionResult<Pais>> Agregar([FromQuery] TipoAdd _tipoAdd)
         {
-            try
-            {
-                _db.Tipo.Add(_tipo);
-                _db.SaveChanges();
-                return Ok();
-            } catch (Exception error)
-            {
-                return BadRequest();
-            }
+            Tipo _tipo = new Tipo();
+            _tipo.Descripcion = _tipoAdd.nombre;
+            _tipo.Falt = DateTime.Now;
+            _tipo.Cusualt = null;
+            _tipo.Fmod = null;
+            _tipo.Cusumod = null;
+            _db.Tipo.Add(_tipo);
+            await _db.SaveChangesAsync();
+
+            return CreatedAtAction("GetTipos", new { id = _tipo.Id }, _tipo);
 
         }
 
@@ -54,18 +73,30 @@ namespace Palancia.Controllers
         /// <returns></returns>
         [HttpPut]
         [Route("editar")]
-        public IActionResult Editar([FromBody] Tipo _tipo)
+        public async Task<IActionResult> Editar([FromQuery] TipoMod _tipoMod)
         {
+            Tipo _tipo = await _db.Tipo.FindAsync(_tipoMod.id);
+            if (_tipo == null)
+            {
+                return NotFound();
+            }
+            //_tipo.Id = _tipoMod.id;
+            _tipo.Descripcion = _tipoMod.nombre;
+            _tipo.Fmod = DateTime.Now;
+            _tipo.Cusumod = null;
+            _db.Entry(_tipo).State = EntityState.Modified;
             try
             {
-                _db.Entry(_tipo).State = EntityState.Modified;
-                _db.SaveChanges();
-                return Ok();
+                await _db.SaveChangesAsync();
             }
-            catch (Exception error)
+            catch (DbUpdateConcurrencyException)
             {
-                return BadRequest();
+                    throw;
+                
             }
+            
+            return NoContent();
+
         }
 
         /// <summary>
@@ -74,24 +105,18 @@ namespace Palancia.Controllers
         /// <returns></returns>
         [HttpDelete]
         [Route("eliminar/{id}")]
-        public IActionResult Eliminar(int id)
+        public async Task<ActionResult<Tipo>> Eliminar(int id)
         {
-            try
-            {
-                var _tipo = _db.Tipo.FirstOrDefault(x => x.Id == id);
+            
+                var _tipo = await _db.Tipo.FindAsync(id);
                 if (_tipo == null)
                 {
                     return NotFound();
                 }
-                //_db.Tipo.Remove(tipo);
+                
                 _db.Tipo.Remove(_tipo);
-                _db.SaveChanges();
-                return Ok();
-            }
-            catch (Exception error)
-            {
-                return BadRequest();
-            }
+                await _db.SaveChangesAsync();
+                return _tipo;
         }
     }
 }
