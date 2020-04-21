@@ -25,7 +25,7 @@ namespace APIfiestas.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Fiesta>>> GetFiestas()
+        public async Task<ActionResult<IEnumerable<Fiesta>>> GetAllFiestas()
         {
             return await _db.Fiesta.ToListAsync();
         }
@@ -46,6 +46,17 @@ namespace APIfiestas.Controllers
         }
 
         /// <summary>
+        /// Obtenemos todos los Fiesta que estan por venir
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("obtenerFiestas")]
+        public async Task<ActionResult<IEnumerable<Fiesta>>> GetFiestas()
+        {
+            return await _db.Fiesta.Where(x => x.Fecha >= DateTime.Today).ToListAsync();
+        }
+
+        /// <summary>
         /// Nos permite añadir un fiesta 
         /// </summary>
         /// <returns></returns>
@@ -54,6 +65,7 @@ namespace APIfiestas.Controllers
         public async Task<ActionResult<Fiesta>> Agregar([FromQuery] FiestaAdd _fiestaAdd)
         {
             Fiesta _fiesta = new Fiesta();
+            _fiesta.Fecha = _fiestaAdd.fecha;
             _fiesta.IdCodigoPostal = _fiestaAdd.id_codigo_postal;
             _fiesta.IdGrupo = _fiestaAdd.id_grupo;
             _fiesta.IdTipo = _fiestaAdd.id_tipo;
