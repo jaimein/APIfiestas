@@ -22,6 +22,12 @@ namespace APIfiestas.Services
             return resultado;
         }
 
+        public async Task<Tipo> ObtenerUnoAsync(int id)
+        {
+            var resultado = await _PalanciaContext.Tipo.FindAsync(id);
+            return resultado;
+        }
+
         public Boolean Agregar(Tipo _tipo)
         {
             try

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using APIfiestas.Models;
 using APIfiestas.Models.request;
+using APIfiestas.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -17,7 +18,7 @@ namespace APIfiestas.Controllers
         private readonly PalanciaContext _db;
         public FiestaController(PalanciaContext db)
         {
-            this._db = db;
+            this._db = db;            
         }
 
         /// <summary>
@@ -28,6 +29,28 @@ namespace APIfiestas.Controllers
         public async Task<ActionResult<IEnumerable<Fiesta>>> GetAllFiestas()
         {
             return await _db.Fiesta.ToListAsync();
+        }
+
+        /// <summary>
+        /// Obtenemos todos los Fiesta solo nombres
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("obtenerFiestasSimple")]
+        public async Task<ActionResult<IEnumerable<FiestaNombres>>> GetAllFiestasSimple()
+        {
+            
+            var fiestas = await _db.Fiesta.Where(x => x.Fecha >= DateTime.Today).Include( x=>x.IdTipoNavigation).Include( g => g.IdGrupoNavigation).Include(l => l.IdCodigoPostalNavigation.IdPoblacionNavigation).ToListAsync();
+            if (fiestas == null)
+            {
+                return NotFound();
+            }
+            List<FiestaNombres> fi = new List<FiestaNombres>();
+            fiestas.ForEach(delegate (Fiesta fiesta) { fi.Add(new FiestaNombres(fiesta)); });
+            
+            return fi;
+            
+
         }
 
         /// <summary>
@@ -134,4 +157,5 @@ namespace APIfiestas.Controllers
             return _fiesta;
         }
     }
+
 }
