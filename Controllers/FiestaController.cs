@@ -54,6 +54,20 @@ namespace APIfiestas.Controllers
         }
 
         /// <summary>
+        /// Obtenemos el numero de fiestas
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("obtenerNumeroFiestas")]
+        public async Task<ActionResult<IEnumerable<int>>> GetNextFiestas()
+        {
+
+            var numero =  _db.Fiesta.Where(x => x.Fecha.Date >= DateTime.Today.Date).GroupBy(d => d.Fecha.Date).Select(f => new { Fecha = f.Key, count = f.Count() });//ToListAsync();
+            return Ok(numero);
+
+        }
+
+        /// <summary>
         /// Obtenemos un fiesta por el id 
         /// </summary>
         /// <returns></returns>
