@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using APIfiestas.Models;
 using APIfiestas.Models.request;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -35,6 +36,7 @@ namespace APIfiestas.Controllers
         /// Obtenemos un codigoPostal por el id 
         /// </summary>
         /// <returns></returns>
+        [Authorize]
         [HttpGet("id")]
         public async Task<ActionResult<CodigoPostal>> GetcodigoPostal(int id)
         {
