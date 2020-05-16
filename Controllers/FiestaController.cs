@@ -40,15 +40,19 @@ namespace APIfiestas.Controllers
         public async Task<ActionResult<IEnumerable<FiestaNombres>>> GetAllFiestasSimple()
         {
             
-            var fiestas = await _db.Fiesta.Where(x => x.Fecha >= DateTime.Today).Include( x=>x.IdTipoNavigation).Include( g => g.IdGrupoNavigation).Include(l => l.IdCodigoPostalNavigation.IdPoblacionNavigation).ToListAsync();
+            var fiestas = await _db.Fiesta.AsNoTracking().Where(x => x.Fecha == DateTime.Today)
+                                            .Include( x=>x.IdTipoNavigation)
+                                            .Include( g => g.IdGrupoNavigation)
+                                            .Include(l => l.IdCodigoPostalNavigation.IdPoblacionNavigation)
+                                            .OrderBy( o => o.Fecha)
+                                            ?.Select (f => new FiestaNombres(f))
+                                            .ToListAsync();
             if (fiestas == null)
             {
                 return NotFound();
-            }
-            List<FiestaNombres> fi = new List<FiestaNombres>();
-            fiestas.ForEach(delegate (Fiesta fiesta) { fi.Add(new FiestaNombres(fiesta)); });
+            }            
             
-            return fi;
+            return fiestas;
             
 
         }
