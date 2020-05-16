@@ -32,6 +32,24 @@ namespace Palancia.Controllers
         }
 
         /// <summary>
+        /// Obtenemos todos los TiposBasico 
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("obtenerTiposBasico")]
+        public async Task<ActionResult<IEnumerable<TipoBasico>>> GetGruposBasico()
+        {
+            var tipos = await _db.Tipo.ToListAsync();
+            if (tipos == null)
+            {
+                return NotFound();
+            }
+            List<TipoBasico> fi = new List<TipoBasico>();
+            tipos.ForEach(delegate (Tipo tipo) { fi.Add(new TipoBasico(tipo)); });
+            return fi;
+        }
+
+        /// <summary>
         /// Obtenemos un tipo por el id 
         /// </summary>
         /// <returns></returns>

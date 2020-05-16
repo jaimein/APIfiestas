@@ -30,6 +30,24 @@ namespace APIfiestas.Controllers
         }
 
         /// <summary>
+        /// Obtenemos todos los GruposBasico
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("obtenerGruposBasico")]
+        public async Task<ActionResult<IEnumerable<GrupoBasico>>> GetGruposBasico()
+        {
+            var grupos = await _db.Grupo.ToListAsync();
+            if(grupos == null)
+            {
+                return NotFound();
+            }
+            List<GrupoBasico> fi = new List<GrupoBasico>();
+            grupos.ForEach(delegate (Grupo grupo) { fi.Add(new GrupoBasico(grupo)); });
+            return fi;
+        }
+
+        /// <summary>
         /// Obtenemos un grupo por el id 
         /// </summary>
         /// <returns></returns>
