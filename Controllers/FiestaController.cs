@@ -40,7 +40,7 @@ namespace APIfiestas.Controllers
         public async Task<ActionResult<IEnumerable<FiestaNombres>>> GetAllFiestasSimple()
         {
             
-            var fiestas = await _db.Fiesta.AsNoTracking().Where(x => x.Fecha == DateTime.Today)
+            var fiestas = await _db.Fiesta.AsNoTracking().Where(x => x.Fecha >= DateTime.Today)
                                             .Include( x=>x.IdTipoNavigation)
                                             .Include( g => g.IdGrupoNavigation)
                                             .Include(l => l.IdCodigoPostalNavigation.IdPoblacionNavigation)
