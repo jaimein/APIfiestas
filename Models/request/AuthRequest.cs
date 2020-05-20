@@ -11,6 +11,6 @@ namespace APIfiestas.Models.request
         [Required]
         public string nombre { get; set; }
         [Required]
-        public string passwod { get; set; }
+        public string password { get; set; }
     }
 }

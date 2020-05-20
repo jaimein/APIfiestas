@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Web.Http.Cors;
 using APIfiestas.Models;
 using APIfiestas.Models.request;
 using APIfiestas.Services;
@@ -24,7 +25,7 @@ namespace APIfiestas.Controllers
         [HttpPost]
         public async Task<IActionResult> Authenticate(AuthRequest request)
         {
-            var user = this._palanciaContext.Usuarios.Where(u => u.Usuario.ToLower() == request.nombre.ToLower() && u.Password == request.passwod).FirstOrDefault();
+            var user = this._palanciaContext.Usuarios.Where(u => u.Usuario.ToLower() == request.nombre.ToLower() && u.Password == request.password).FirstOrDefault();
             if(user == null)
             {
                 return Unauthorized();

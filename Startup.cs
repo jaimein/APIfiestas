@@ -25,8 +25,7 @@ namespace APIfiestas
 {
     public class Startup
     {
-        readonly string MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
-
+        
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
@@ -44,15 +43,7 @@ namespace APIfiestas
                 }
             );
 
-            services.AddCors(options =>
-            {
-                options.AddPolicy(name: MyAllowSpecificOrigins,
-                                  builder =>
-                                  {
-                                      builder.WithOrigins("http://localhost:4200",
-                                                          "https://localhost:4200");
-                                  });
-            });
+            services.AddCors();
 
             services.AddControllers().AddNewtonsoftJson(
                 options => options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore
@@ -136,7 +127,7 @@ namespace APIfiestas
                 }
              );
             app.UseRouting();
-            app.UseCors(MyAllowSpecificOrigins);
+            app.UseCors(builder => builder.AllowAnyOrigin().AllowAnyHeader().WithMethods("GET", "POST", "PUT", "DELETE"));
 
             app.UseAuthentication();
             app.UseAuthorization();

@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using APIfiestas.Models;
 using APIfiestas.Models.request;
 using APIfiestas.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -35,11 +36,11 @@ namespace APIfiestas.Controllers
         /// Obtenemos todos los Fiesta solo nombres
         /// </summary>
         /// <returns></returns>
+        //[Authorize]
         [HttpGet]
         [Route("obtenerFiestasSimple")]
         public async Task<ActionResult<IEnumerable<FiestaNombres>>> GetAllFiestasSimple()
         {
-            
             var fiestas = await _db.Fiesta.AsNoTracking().Where(x => x.Fecha >= DateTime.Today)
                                             .Include( x=>x.IdTipoNavigation)
                                             .Include( g => g.IdGrupoNavigation)
@@ -50,11 +51,8 @@ namespace APIfiestas.Controllers
             if (fiestas == null)
             {
                 return NotFound();
-            }            
-            
-            return fiestas;
-            
-
+            }                       
+            return fiestas;            
         }
 
         /// <summary>
