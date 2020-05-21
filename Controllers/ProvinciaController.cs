@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
 using APIfiestas.Models;
 using APIfiestas.Models.request;
@@ -38,6 +39,25 @@ namespace APIfiestas.Controllers
         public async Task<ActionResult<Provincias>> Getprovincias(int id)
         {
             var provincias = await _db.Provincias.FindAsync(id);
+            if (provincias == null)
+            {
+                return NotFound();
+            }
+            return provincias;
+        }
+
+        /// <summary>
+        /// Obtenemos un provincias de un id de comunidades 
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("provinciasByComunidad")]
+        public async Task<ActionResult<IEnumerable<ProvinciasBasico>>> GetprovinciasByComunidad(int idProvincia)
+        {
+            var provincias = await _db.Provincias.AsNoTracking()
+                                                 .Where(p => p.IdComunidad == idProvincia)
+                                                 ?.Select( x => new ProvinciasBasico(x))
+                                                 .ToListAsync();
             if (provincias == null)
             {
                 return NotFound();
