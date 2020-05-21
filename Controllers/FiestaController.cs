@@ -56,6 +56,28 @@ namespace APIfiestas.Controllers
         }
 
         /// <summary>
+        /// Obtenemos la Fiesta solo nombres por el id que le pasamos
+        /// </summary>
+        /// <returns></returns>
+        //[Authorize]
+        [HttpGet]
+        [Route("obtenerFiestaSimple")]
+        public async Task<ActionResult<FiestaNombres>> GetFiestaSimple(int id)
+        {
+            var fiestas = await _db.Fiesta.AsNoTracking().Where(x => x.Id == id)
+                                            .Include(x => x.IdTipoNavigation)
+                                            .Include(g => g.IdGrupoNavigation)
+                                            .Include(l => l.IdCodigoPostalNavigation.IdPoblacionNavigation)
+                                            ?.Select(f => new FiestaNombres(f))
+                                            .FirstOrDefaultAsync();
+            if (fiestas == null)
+            {
+                return NotFound();
+            }
+            return fiestas;
+        }
+
+        /// <summary>
         /// Obtenemos el numero de fiestas
         /// </summary>
         /// <returns></returns>
