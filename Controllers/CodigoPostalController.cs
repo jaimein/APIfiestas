@@ -49,6 +49,25 @@ namespace APIfiestas.Controllers
         }
 
         /// <summary>
+        /// Obtenemos un codigoPostal por el id 
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("cpByPoblacion")]
+        public async Task<ActionResult<IEnumerable<CodigoPostalBasico>>> GetcodigoPostalByPoblacion(int idPoblacion)
+        {
+            var codigoPostal = await _db.CodigoPostal.AsNoTracking()
+                                                     .Where(p=>p.IdPoblacion==idPoblacion)
+                                                     ?.Select(x=> new CodigoPostalBasico(x))
+                                                     .ToListAsync();
+            if (codigoPostal == null)
+            {
+                return NotFound();
+            }
+            return codigoPostal;
+        }
+
+        /// <summary>
         /// Nos permite añadir un codigoPostal 
         /// </summary>
         /// <returns></returns>
