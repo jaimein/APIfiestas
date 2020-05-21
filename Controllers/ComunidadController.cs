@@ -25,9 +25,11 @@ namespace APIfiestas.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Comunidades>>> GetComunidadess()
+        public async Task<ActionResult<IEnumerable<ComunidadesBasico>>> GetComunidadess()
         {
-            return await _db.Comunidades.ToListAsync();
+            return await _db.Comunidades.AsNoTracking()
+                                        ?.Select(c => new ComunidadesBasico(c))
+                                        .ToListAsync();
         }
 
         /// <summary>
