@@ -46,6 +46,25 @@ namespace APIfiestas.Controllers
         }
 
         /// <summary>
+        /// Obtenemos un poblaciones por el id de provincia
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("poblacionesByProvincia")]
+        public async Task<ActionResult<IEnumerable<PoblacionesBasico>>> GetpoblacionesByProvincia(int idProvincia)
+        {
+            var poblaciones = await _db.Poblaciones.AsNoTracking()
+                                                    .Where(p => p.IdProvincia == idProvincia)
+                                                    ?.Select(x => new PoblacionesBasico(x))
+                                                    .ToListAsync();
+            if (poblaciones == null)
+            {
+                return NotFound();
+            }
+            return poblaciones;
+        }
+
+        /// <summary>
         /// Nos permite añadir un poblaciones 
         /// </summary>
         /// <returns></returns>
