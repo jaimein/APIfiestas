@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using APIfiestas.Models;
 using APIfiestas.Models.request;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -66,14 +67,15 @@ namespace APIfiestas.Controllers
         /// Nos permite añadir un grupo 
         /// </summary>
         /// <returns></returns>
+        [Authorize]
         [HttpPost]
         [Route("agregar")]
-        public async Task<ActionResult<Pais>> Agregar([FromQuery] GrupoAdd _grupoAdd)
+        public async Task<ActionResult<Pais>> Agregar(GrupoAdd _grupoAdd)
         {
             Grupo _grupo = new Grupo();
             _grupo.Descripcion = _grupoAdd.nombre;
             _grupo.Falt = DateTime.Now;
-            _grupo.Cusualt = null;
+            _grupo.Cusualt = User.Claims.Where(x => x.Type == System.Security.Claims.ClaimTypes.Name).Select(a => a.Value).FirstOrDefault();
             _grupo.Fmod = null;
             _grupo.Cusumod = null;
             _db.Grupo.Add(_grupo);
@@ -87,6 +89,7 @@ namespace APIfiestas.Controllers
         /// Nos permite editar un grupo 
         /// </summary>
         /// <returns></returns>
+        [Authorize]
         [HttpPut]
         [Route("editar")]
         public async Task<IActionResult> Editar([FromQuery] GrupoMod _grupoMod)
@@ -99,7 +102,7 @@ namespace APIfiestas.Controllers
             //_grupo.Id = _grupoMod.id;
             _grupo.Descripcion = _grupoMod.nombre;
             _grupo.Fmod = DateTime.Now;
-            _grupo.Cusumod = null;
+            _grupo.Cusumod = User.Claims.Where(x => x.Type == System.Security.Claims.ClaimTypes.Name).Select(a => a.Value).FirstOrDefault();
             _db.Entry(_grupo).State = EntityState.Modified;
             try
             {
@@ -119,6 +122,7 @@ namespace APIfiestas.Controllers
         /// Eliminamos el grupo que le pasamos 
         /// </summary>
         /// <returns></returns>
+        [Authorize]
         [HttpDelete]
         [Route("eliminar/{id}")]
         public async Task<ActionResult<Grupo>> Eliminar(int id)

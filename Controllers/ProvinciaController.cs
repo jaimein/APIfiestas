@@ -5,6 +5,7 @@ using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
 using APIfiestas.Models;
 using APIfiestas.Models.request;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -52,10 +53,10 @@ namespace APIfiestas.Controllers
         /// <returns></returns>
         [HttpGet]
         [Route("provinciasByComunidad")]
-        public async Task<ActionResult<IEnumerable<ProvinciasBasico>>> GetprovinciasByComunidad(int idProvincia)
+        public async Task<ActionResult<IEnumerable<ProvinciasBasico>>> GetprovinciasByComunidad(int idComunidad)
         {
             var provincias = await _db.Provincias.AsNoTracking()
-                                                 .Where(p => p.IdComunidad == idProvincia)
+                                                 .Where(p => p.IdComunidad == idComunidad)
                                                  ?.Select( x => new ProvinciasBasico(x))
                                                  .ToListAsync();
             if (provincias == null)
@@ -69,6 +70,7 @@ namespace APIfiestas.Controllers
         /// Nos permite añadir un provincias 
         /// </summary>
         /// <returns></returns>
+        [Authorize]
         [HttpPost]
         [Route("agregar")]
         public async Task<ActionResult<Provincias>> Agregar([FromQuery] ProvinciasAdd _provinciasAdd)
@@ -77,7 +79,7 @@ namespace APIfiestas.Controllers
             _provincias.Nombre = _provinciasAdd.nombre;
             _provincias.IdComunidad = _provinciasAdd.id_comunidad;
             _provincias.Falt = DateTime.Now;
-            _provincias.Cusualt = null;
+            _provincias.Cusualt = User.Claims.Where(x => x.Type == System.Security.Claims.ClaimTypes.Name).Select(a => a.Value).FirstOrDefault();
             _provincias.Fmod = DateTime.Now;
             _provincias.Cusumod = null;
             _db.Provincias.Add(_provincias);
@@ -91,6 +93,7 @@ namespace APIfiestas.Controllers
         /// Nos permite editar un provincias 
         /// </summary>
         /// <returns></returns>
+        [Authorize]
         [HttpPut]
         [Route("editar")]
         public async Task<IActionResult> Editar([FromQuery] ProvinciasMod _provinciasMod)
@@ -104,7 +107,7 @@ namespace APIfiestas.Controllers
             _provincias.Nombre = _provinciasMod.nombre;
             _provincias.IdComunidad = _provinciasMod.id_comunidad;
             _provincias.Fmod = DateTime.Now;
-            _provincias.Cusumod = null;
+            _provincias.Cusumod = User.Claims.Where(x => x.Type == System.Security.Claims.ClaimTypes.Name).Select(a => a.Value).FirstOrDefault();
             _db.Entry(_provincias).State = EntityState.Modified;
             try
             {
@@ -124,6 +127,7 @@ namespace APIfiestas.Controllers
         /// Eliminamos el provincias que le pasamos 
         /// </summary>
         /// <returns></returns>
+        [Authorize]
         [HttpDelete]
         [Route("eliminar/{id}")]
         public async Task<ActionResult<Provincias>> Eliminar(int id)

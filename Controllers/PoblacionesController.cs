@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using APIfiestas.Models;
 using APIfiestas.Models.request;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -68,6 +69,7 @@ namespace APIfiestas.Controllers
         /// Nos permite añadir un poblaciones 
         /// </summary>
         /// <returns></returns>
+        [Authorize]
         [HttpPost]
         [Route("agregar")]
         public async Task<ActionResult<Pais>> Agregar([FromQuery] PoblacionesAdd _poblacionesAdd)
@@ -76,7 +78,7 @@ namespace APIfiestas.Controllers
             _poblaciones.Nombre = _poblacionesAdd.nombre;
             _poblaciones.IdProvincia = _poblacionesAdd.id_provincia;
             _poblaciones.Falt = DateTime.Now;
-            _poblaciones.Cusualt = null;
+            _poblaciones.Cusualt = User.Claims.Where(x => x.Type == System.Security.Claims.ClaimTypes.Name).Select(a => a.Value).FirstOrDefault();
             _poblaciones.Fmod = DateTime.Now;
             _poblaciones.Cusumod = null;
             _db.Poblaciones.Add(_poblaciones);
@@ -90,6 +92,7 @@ namespace APIfiestas.Controllers
         /// Nos permite editar un poblaciones 
         /// </summary>
         /// <returns></returns>
+        [Authorize]
         [HttpPut]
         [Route("editar")]
         public async Task<IActionResult> Editar([FromQuery] PoblacionesMod _poblacionesMod)
@@ -103,7 +106,7 @@ namespace APIfiestas.Controllers
             _poblaciones.Nombre = _poblacionesMod.nombre;
             _poblaciones.IdProvincia = _poblacionesMod.id_provincia;
             _poblaciones.Fmod = DateTime.Now;
-            _poblaciones.Cusumod = null;
+            _poblaciones.Cusumod = User.Claims.Where(x => x.Type == System.Security.Claims.ClaimTypes.Name).Select(a => a.Value).FirstOrDefault();
             _db.Entry(_poblaciones).State = EntityState.Modified;
             try
             {
@@ -123,6 +126,7 @@ namespace APIfiestas.Controllers
         /// Eliminamos el poblaciones que le pasamos 
         /// </summary>
         /// <returns></returns>
+        [Authorize]
         [HttpDelete]
         [Route("eliminar/{id}")]
         public async Task<ActionResult<Poblaciones>> Eliminar(int id)

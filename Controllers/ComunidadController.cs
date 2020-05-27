@@ -51,6 +51,7 @@ namespace APIfiestas.Controllers
         /// Nos permite añadir un comunidades 
         /// </summary>
         /// <returns></returns>
+        [Authorize]
         [HttpPost]
         [Route("agregar")]
         public async Task<ActionResult<Comunidades>> Agregar([FromQuery] ComunidadesAdd _comunidadesAdd)
@@ -59,7 +60,7 @@ namespace APIfiestas.Controllers
             _comunidades.Nombre = _comunidadesAdd.nombre;
             _comunidades.IdPais = _comunidadesAdd.id_pais;
             _comunidades.Falt = DateTime.Now;
-            _comunidades.Cusualt = null;
+            _comunidades.Cusualt = User.Claims.Where(x => x.Type == System.Security.Claims.ClaimTypes.Name).Select(a => a.Value).FirstOrDefault();
             _comunidades.Fmod = DateTime.Now;
             _comunidades.Cusumod = null;
             _db.Comunidades.Add(_comunidades);
@@ -73,6 +74,7 @@ namespace APIfiestas.Controllers
         /// Nos permite editar un comunidades 
         /// </summary>
         /// <returns></returns>
+        [Authorize]
         [HttpPut]
         [Route("editar")]
         public async Task<IActionResult> Editar([FromQuery] ComunidadesMod _comunidadesMod)
@@ -86,7 +88,7 @@ namespace APIfiestas.Controllers
             _comunidades.Nombre = _comunidadesMod.nombre;
             _comunidades.IdPais = _comunidadesMod.id_pais;
             _comunidades.Fmod = DateTime.Now;
-            _comunidades.Cusumod = null;
+            _comunidades.Cusumod = User.Claims.Where(x => x.Type == System.Security.Claims.ClaimTypes.Name).Select(a => a.Value).FirstOrDefault();
             _db.Entry(_comunidades).State = EntityState.Modified;
             try
             {
@@ -106,6 +108,7 @@ namespace APIfiestas.Controllers
         /// Eliminamos el comunidades que le pasamos 
         /// </summary>
         /// <returns></returns>
+        [Authorize]
         [HttpDelete]
         [Route("eliminar/{id}")]
         public async Task<ActionResult<Comunidades>> Eliminar(int id)

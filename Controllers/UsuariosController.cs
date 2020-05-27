@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using APIfiestas.Models;
 using APIfiestas.Models.request;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -49,6 +50,7 @@ namespace APIfiestas.Controllers
         /// Nos permite añadir un usuarios 
         /// </summary>
         /// <returns></returns>
+        [Authorize]
         [HttpPost]
         [Route("agregar")]
         public async Task<ActionResult<Usuarios>> Agregar([FromQuery] UsuariosAdd _usuariosAdd)
@@ -59,7 +61,7 @@ namespace APIfiestas.Controllers
             _usuarios.IdTipo = _usuariosAdd.id_tipo;
             _usuarios.Email = _usuariosAdd.email;
             _usuarios.Falt = DateTime.Now;
-            _usuarios.Cusualt = null;
+            _usuarios.Cusualt = _usuariosAdd.usuario;
             _usuarios.Fmod = DateTime.Now;
             _usuarios.Cusumod = null;
             _db.Usuarios.Add(_usuarios);
@@ -73,9 +75,10 @@ namespace APIfiestas.Controllers
         /// Nos permite editar un usuarios 
         /// </summary>
         /// <returns></returns>
+        [Authorize]
         [HttpPut]
         [Route("editar")]
-        public async Task<IActionResult> Editar([FromQuery] UsuariosMod _usuariosMod)
+        public async Task<IActionResult> Editar(UsuariosMod _usuariosMod)
         {
             Usuarios _usuarios = await _db.Usuarios.FindAsync(_usuariosMod.id);
             if (_usuarios == null)
@@ -88,7 +91,7 @@ namespace APIfiestas.Controllers
             _usuarios.IdTipo = _usuariosMod.id_tipo;
             _usuarios.Email = _usuariosMod.email;
             _usuarios.Fmod = DateTime.Now;
-            _usuarios.Cusumod = null;
+            _usuarios.Cusumod = User.Claims.Where(x => x.Type == System.Security.Claims.ClaimTypes.Name).Select(a => a.Value).FirstOrDefault();
             _db.Entry(_usuarios).State = EntityState.Modified;
             try
             {
@@ -108,6 +111,7 @@ namespace APIfiestas.Controllers
         /// Eliminamos el usuarios que le pasamos 
         /// </summary>
         /// <returns></returns>
+        [Authorize]
         [HttpDelete]
         [Route("eliminar/{id}")]
         public async Task<ActionResult<Usuarios>> Eliminar(int id)

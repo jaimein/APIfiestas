@@ -86,7 +86,7 @@ namespace APIfiestas.Controllers
         public async Task<ActionResult<IEnumerable<int>>> GetNextFiestas()
         {
 
-            var numero =  _db.Fiesta.Where(x => x.Fecha.Date >= DateTime.Today.Date).GroupBy(d => d.Fecha.Date).Select(f => new { Fecha = f.Key, count = f.Count() });//ToListAsync();
+            var numero =  _db.Fiesta.Where(x => x.Fecha.Date >= DateTime.Today.Date && x.Fecha.Date <= DateTime.Today.Date.AddDays(15)).GroupBy(d => d.Fecha.Date).Select(f => new { Fecha = f.Key, count = f.Count() });//ToListAsync();
             return Ok(numero);
 
         }
@@ -121,9 +121,10 @@ namespace APIfiestas.Controllers
         /// Nos permite añadir un fiesta 
         /// </summary>
         /// <returns></returns>
+        [Authorize]
         [HttpPost]
         [Route("agregar")]
-        public async Task<ActionResult<Fiesta>> Agregar([FromQuery] FiestaAdd _fiestaAdd)
+        public async Task<ActionResult<Fiesta>> Agregar(FiestaAdd _fiestaAdd)
         {
             Fiesta _fiesta = new Fiesta();
             _fiesta.Fecha = _fiestaAdd.fecha;
@@ -131,7 +132,7 @@ namespace APIfiestas.Controllers
             _fiesta.IdGrupo = _fiestaAdd.id_grupo;
             _fiesta.IdTipo = _fiestaAdd.id_tipo;
             _fiesta.Falt = DateTime.Now;
-            _fiesta.Cusualt = null;
+            _fiesta.Cusualt = User.Claims.Where(x => x.Type == System.Security.Claims.ClaimTypes.Name).Select(a => a.Value).FirstOrDefault();
             _fiesta.Fmod = DateTime.Now;
             _fiesta.Cusumod = null;
             _db.Fiesta.Add(_fiesta);
@@ -145,6 +146,7 @@ namespace APIfiestas.Controllers
         /// Nos permite editar un fiesta 
         /// </summary>
         /// <returns></returns>
+        [Authorize]
         [HttpPut]
         [Route("editar")]
         public async Task<IActionResult> Editar([FromQuery] FiestaMod _fiestaMod)
@@ -159,7 +161,7 @@ namespace APIfiestas.Controllers
             _fiesta.IdGrupo = _fiestaMod.id_grupo;
             _fiesta.IdTipo = _fiestaMod.id_tipo;
             _fiesta.Fmod = DateTime.Now;
-            _fiesta.Cusumod = null;
+            _fiesta.Cusumod = User.Claims.Where(x => x.Type == System.Security.Claims.ClaimTypes.Name).Select(a => a.Value).FirstOrDefault();
             _db.Entry(_fiesta).State = EntityState.Modified;
             try
             {
@@ -179,8 +181,9 @@ namespace APIfiestas.Controllers
         /// Eliminamos el fiesta que le pasamos 
         /// </summary>
         /// <returns></returns>
+        [Authorize]
         [HttpDelete]
-        [Route("eliminar/{id}")]
+        [Route("eliminar")]
         public async Task<ActionResult<Fiesta>> Eliminar(int id)
         {
 

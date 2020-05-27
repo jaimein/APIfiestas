@@ -36,7 +36,6 @@ namespace APIfiestas.Controllers
         /// Obtenemos un codigoPostal por el id 
         /// </summary>
         /// <returns></returns>
-        [Authorize]
         [HttpGet("id")]
         public async Task<ActionResult<CodigoPostal>> GetcodigoPostal(int id)
         {
@@ -71,6 +70,7 @@ namespace APIfiestas.Controllers
         /// Nos permite añadir un codigoPostal 
         /// </summary>
         /// <returns></returns>
+        [Authorize]
         [HttpPost]
         [Route("agregar")]
         public async Task<ActionResult<CodigoPostal>> Agregar([FromQuery] CodigoPostalAdd _codigoPostalAdd)
@@ -80,7 +80,7 @@ namespace APIfiestas.Controllers
             _codigoPostal.Calle = _codigoPostalAdd.calle;
             _codigoPostal.IdPoblacion = _codigoPostalAdd.id_poblacion;
             _codigoPostal.Falt = DateTime.Now;
-            _codigoPostal.Cusualt = null;
+            _codigoPostal.Cusualt = User.Claims.Where(x => x.Type == System.Security.Claims.ClaimTypes.Name).Select(a => a.Value).FirstOrDefault();
             _codigoPostal.Fmod = DateTime.Now;
             _codigoPostal.Cusumod = null;
             _db.CodigoPostal.Add(_codigoPostal);
@@ -94,6 +94,7 @@ namespace APIfiestas.Controllers
         /// Nos permite editar un codigoPostal 
         /// </summary>
         /// <returns></returns>
+        [Authorize]
         [HttpPut]
         [Route("editar")]
         public async Task<IActionResult> Editar([FromQuery] CodigoPostalMod _codigoPostalMod)
@@ -108,7 +109,7 @@ namespace APIfiestas.Controllers
             _codigoPostal.Calle = _codigoPostalMod.calle;
             _codigoPostal.IdPoblacion = _codigoPostalMod.id_poblacion;
             _codigoPostal.Fmod = DateTime.Now;
-            _codigoPostal.Cusumod = null;
+            _codigoPostal.Cusumod = User.Claims.Where(x => x.Type == System.Security.Claims.ClaimTypes.Name).Select(a => a.Value).FirstOrDefault();
             _db.Entry(_codigoPostal).State = EntityState.Modified;
             try
             {
@@ -128,6 +129,7 @@ namespace APIfiestas.Controllers
         /// Eliminamos el codigoPostal que le pasamos 
         /// </summary>
         /// <returns></returns>
+        [Authorize]
         [HttpDelete]
         [Route("eliminar/{id}")]
         public async Task<ActionResult<CodigoPostal>> Eliminar(int id)

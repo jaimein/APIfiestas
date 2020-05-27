@@ -5,6 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using APIfiestas.Models;
 using APIfiestas.Models.request;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -68,14 +69,15 @@ namespace Palancia.Controllers
         /// Nos permite añadir un tipo 
         /// </summary>
         /// <returns></returns>
+        [Authorize]
         [HttpPost]
         [Route("agregar")]
-        public async Task<ActionResult<Pais>> Agregar([FromQuery] TipoAdd _tipoAdd)
+        public async Task<ActionResult<Pais>> Agregar(TipoAdd _tipoAdd)
         {
             Tipo _tipo = new Tipo();
             _tipo.Descripcion = _tipoAdd.nombre;
             _tipo.Falt = DateTime.Now;
-            _tipo.Cusualt = null;
+            _tipo.Cusualt = User.Claims.Where(x => x.Type == System.Security.Claims.ClaimTypes.Name).Select(a => a.Value).FirstOrDefault();
             _tipo.Fmod = null;
             _tipo.Cusumod = null;
             _db.Tipo.Add(_tipo);
@@ -89,6 +91,7 @@ namespace Palancia.Controllers
         /// Nos permite editar un tipo 
         /// </summary>
         /// <returns></returns>
+        [Authorize]
         [HttpPut]
         [Route("editar")]
         public async Task<IActionResult> Editar([FromQuery] TipoMod _tipoMod)
@@ -101,7 +104,7 @@ namespace Palancia.Controllers
             //_tipo.Id = _tipoMod.id;
             _tipo.Descripcion = _tipoMod.nombre;
             _tipo.Fmod = DateTime.Now;
-            _tipo.Cusumod = null;
+            _tipo.Cusumod = User.Claims.Where(x => x.Type == System.Security.Claims.ClaimTypes.Name).Select(a => a.Value).FirstOrDefault();
             _db.Entry(_tipo).State = EntityState.Modified;
             try
             {
@@ -121,6 +124,7 @@ namespace Palancia.Controllers
         /// Eliminamos el tipo que le pasamos 
         /// </summary>
         /// <returns></returns>
+        [Authorize]
         [HttpDelete]
         [Route("eliminar/{id}")]
         public async Task<ActionResult<Tipo>> Eliminar(int id)

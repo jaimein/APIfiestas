@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using APIfiestas.Models;
 using APIfiestas.Models.request;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -48,6 +49,7 @@ namespace APIfiestas.Controllers
         /// Nos permite añadir un pais 
         /// </summary>
         /// <returns></returns>
+        [Authorize]
         [HttpPost]
         [Route("agregar")]
         public async Task<ActionResult<Pais>> Agregar([FromQuery] PaisAdd _paisAdd)
@@ -56,7 +58,7 @@ namespace APIfiestas.Controllers
             _pais.Nombre = _paisAdd.nombre;
             _pais.Cod = _paisAdd.cod;
             _pais.Falt = DateTime.Now;
-            _pais.Cusualt = null;
+            _pais.Cusualt = User.Claims.Where(x => x.Type == System.Security.Claims.ClaimTypes.Name).Select(a => a.Value).FirstOrDefault();
             _pais.Fmod = null;
             _pais.Cusumod = null;
             _db.Pais.Add(_pais);
@@ -70,6 +72,7 @@ namespace APIfiestas.Controllers
         /// Nos permite editar un pais 
         /// </summary>
         /// <returns></returns>
+        [Authorize]
         [HttpPut]
         [Route("editar")]
         public async Task<IActionResult> Editar([FromQuery] PaisMod _paisMod)
@@ -83,7 +86,7 @@ namespace APIfiestas.Controllers
             _pais.Nombre = _paisMod.nombre;
             _pais.Cod = _paisMod.cod;
             _pais.Fmod = DateTime.Now;
-            _pais.Cusumod = null;
+            _pais.Cusumod = User.Claims.Where(x => x.Type == System.Security.Claims.ClaimTypes.Name).Select(a => a.Value).FirstOrDefault();
             _db.Entry(_pais).State = EntityState.Modified;
             try
             {
@@ -103,6 +106,7 @@ namespace APIfiestas.Controllers
         /// Eliminamos el pais que le pasamos 
         /// </summary>
         /// <returns></returns>
+        [Authorize]
         [HttpDelete]
         [Route("eliminar/{id}")]
         public async Task<ActionResult<Pais>> Eliminar(int id)
