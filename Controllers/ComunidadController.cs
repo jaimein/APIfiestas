@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using APIfiestas.Models;
 using APIfiestas.Models.request;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
