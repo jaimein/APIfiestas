@@ -41,10 +41,12 @@ namespace APIfiestas.Controllers
         [Route("obtenerFiestasSimple")]
         public async Task<ActionResult<IEnumerable<FiestaNombres>>> GetAllFiestasSimple()
         {
-            var fiestas = await _db.Fiesta.AsNoTracking().Where(x => x.Fecha >= DateTime.Today)
+            var fiestas = await _db.Fiesta.AsNoTracking()
+                                            .Where(x => x.Fecha >= DateTime.Today)
                                             .Include( x=>x.IdTipoNavigation)
                                             .Include( g => g.IdGrupoNavigation)
-                                            .Include(l => l.IdCodigoPostalNavigation.IdPoblacionNavigation)
+                                            .Include(l => l.IdCodigoPostalNavigation
+                                                            .IdPoblacionNavigation)
                                             .OrderBy( o => o.Fecha)
                                             ?.Select (f => new FiestaNombres(f))
                                             .ToListAsync();
@@ -86,7 +88,10 @@ namespace APIfiestas.Controllers
         public async Task<ActionResult<IEnumerable<int>>> GetNextFiestas()
         {
 
-            var numero =  _db.Fiesta.Where(x => x.Fecha.Date >= DateTime.Today.Date && x.Fecha.Date <= DateTime.Today.Date.AddDays(15)).GroupBy(d => d.Fecha.Date).Select(f => new { Fecha = f.Key, count = f.Count() });//ToListAsync();
+            var numero =  _db.Fiesta
+                                .Where(x => x.Fecha.Date >= DateTime.Today.Date && x.Fecha.Date <= DateTime.Today.Date.AddDays(15))
+                                .GroupBy(d => d.Fecha.Date)
+                                .Select(f => new { Fecha = f.Key, count = f.Count() });
             return Ok(numero);
 
         }
@@ -114,7 +119,9 @@ namespace APIfiestas.Controllers
         [Route("obtenerFiestas")]
         public async Task<ActionResult<IEnumerable<Fiesta>>> GetFiestas()
         {
-            return await _db.Fiesta.Where(x => x.Fecha >= DateTime.Today).ToListAsync();
+            return await _db.Fiesta
+                            .Where(x => x.Fecha >= DateTime.Today)
+                            .ToListAsync();
         }
 
         /// <summary>
@@ -132,7 +139,10 @@ namespace APIfiestas.Controllers
             _fiesta.IdGrupo = _fiestaAdd.id_grupo;
             _fiesta.IdTipo = _fiestaAdd.id_tipo;
             _fiesta.Falt = DateTime.Now;
-            _fiesta.Cusualt = User.Claims.Where(x => x.Type == System.Security.Claims.ClaimTypes.Name).Select(a => a.Value).FirstOrDefault();
+            _fiesta.Cusualt = User.Claims
+                                    .Where(x => x.Type == System.Security.Claims.ClaimTypes.Name)
+                                    .Select(a => a.Value)
+                                    .FirstOrDefault();
             _fiesta.Fmod = DateTime.Now;
             _fiesta.Cusumod = null;
             _db.Fiesta.Add(_fiesta);
@@ -149,7 +159,7 @@ namespace APIfiestas.Controllers
         [Authorize]
         [HttpPut]
         [Route("editar")]
-        public async Task<IActionResult> Editar([FromQuery] FiestaMod _fiestaMod)
+        public async Task<IActionResult> Editar(FiestaMod _fiestaMod)
         {
             Fiesta _fiesta = await _db.Fiesta.FindAsync(_fiestaMod.id);
             if (_fiesta == null)
@@ -161,7 +171,10 @@ namespace APIfiestas.Controllers
             _fiesta.IdGrupo = _fiestaMod.id_grupo;
             _fiesta.IdTipo = _fiestaMod.id_tipo;
             _fiesta.Fmod = DateTime.Now;
-            _fiesta.Cusumod = User.Claims.Where(x => x.Type == System.Security.Claims.ClaimTypes.Name).Select(a => a.Value).FirstOrDefault();
+            _fiesta.Cusumod = User.Claims
+                                    .Where(x => x.Type == System.Security.Claims.ClaimTypes.Name)
+                                    .Select(a => a.Value)
+                                    .FirstOrDefault();
             _db.Entry(_fiesta).State = EntityState.Modified;
             try
             {
@@ -172,9 +185,7 @@ namespace APIfiestas.Controllers
                 throw;
 
             }
-
             return NoContent();
-
         }
 
         /// <summary>

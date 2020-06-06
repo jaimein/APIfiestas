@@ -127,6 +127,7 @@ namespace APIfiestas
                 }
              );
             app.UseRouting();
+
             app.UseCors(builder => builder.AllowAnyOrigin().AllowAnyHeader().WithMethods("GET", "POST", "PUT", "DELETE"));
 
             app.UseAuthentication();

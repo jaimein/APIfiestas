@@ -20,12 +20,9 @@ namespace APIfiestas.Models
             fecha = fiesta.Fecha;
             nombreTipo = fiesta.IdTipoNavigation.Descripcion;
             nombreGrupo = fiesta.IdGrupoNavigation.Descripcion;
-            Localidad = fiesta.IdCodigoPostalNavigation.IdPoblacionNavigation.Nombre;
+            Localidad = fiesta.IdCodigoPostalNavigation
+                                .IdPoblacionNavigation.Nombre;
             zona = fiesta.IdCodigoPostalNavigation.Calle;
         }
-
-
-        //public string nomGrupo;
-
     }
 }
